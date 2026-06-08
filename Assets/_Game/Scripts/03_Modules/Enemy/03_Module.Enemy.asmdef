@@ -1,0 +1,18 @@
+{
+    "name": "ModuleEnemy",
+    "rootNamespace": "Binh.Module.Enemy",
+    "references": [
+        "GUID:d7f832e7a0c4b864db6408799f68066b",
+        "GUID:b6f2e69e6d6487f469dcb11d7cc6bf80",
+        "GUID:b0214a6008ed146ff8f122a6a9c2f6cc"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,21 @@
+{
+    "name": "05_Scene",
+    "rootNamespace": "Binh.Scenes",
+    "references": [
+        "GUID:d7f832e7a0c4b864db6408799f68066b",
+        "GUID:b6f2e69e6d6487f469dcb11d7cc6bf80",
+        "GUID:ef4718f9f0b23514d84df8b9e824ce54",
+        "GUID:6eb08b9dca94fd94cae0bdb38e328ede",
+        "GUID:95ed126ce3b09df4fa51fe1269cab02e",
+        "GUID:b0214a6008ed146ff8f122a6a9c2f6cc"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

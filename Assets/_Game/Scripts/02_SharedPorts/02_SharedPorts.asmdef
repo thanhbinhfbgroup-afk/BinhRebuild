@@ -1,0 +1,16 @@
+{
+    "name": "02_SharePorts",
+    "rootNamespace": "Binh.SharedPorts",
+    "references": [
+        "GUID:d7f832e7a0c4b864db6408799f68066b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
