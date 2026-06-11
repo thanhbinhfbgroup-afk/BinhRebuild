@@ -1,14 +1,15 @@
 using System;
 
+
 namespace Binh.Core.ValueObjects
 {
-    public readonly struct BinhEntityId : IEquatable<BinhEntityId>
+    public readonly struct BinhEntityId : IEqualtable<BinhEntityId>
     {
         private readonly Guid _value;
-        private BinhEntityId(Guid value) { _value = value; }
-
+        private BinhEntityId(Guid value) {_value = value;}
+      
         public static BinhEntityId New() => new BinhEntityId(Guid.NewGuid());
-
+  
         public static BinhEntityId Invalid => new BinhEntityId(Guid.Empty);
 
         public bool IsValid => _value != Guid.Empty;
@@ -24,7 +25,7 @@ namespace Binh.Core.ValueObjects
         public static bool operator ==(BinhEntityId left, BinhEntityId right) => left.Equals(right);
 
         public static bool operator !=(BinhEntityId left, BinhEntityId right) => !left.Equals(right);
-
+      
     }
 
 }

@@ -1,4 +1,4 @@
-# REBUILD PLAYBOOK — Binh
+# REBUILD PLAYBOOK — Tung
 
 ## 1. Mục tiêu của file này
 
@@ -9,7 +9,7 @@ File này là bản hướng dẫn rebuild lại dự án **từ đầu đến c
 - **Repo hiện tại chỉ là baseline để đối chiếu sau khi bạn tự làm xong từng slice**
 - **Mỗi slice phải chạy được, test được, rồi mới mở slice tiếp theo**
 
-File này không phải là tài liệu kiến trúc thay thế cho [CONTEXT.v2.md](/D:/Game/BinhRebuild/Assets/Editor/CONTEXT.v2.md).  
+File này không phải là tài liệu kiến trúc thay thế cho [CONTEXT.v2.md](/D:/Game/TungRebuild/Assets/Editor/CONTEXT.v2.md).  
 Nó là **playbook thực thi**: bắt đầu từ đâu, đi theo thứ tự nào, ở mỗi bước phải làm gì, test gì, commit lúc nào, so với baseline ra sao.
 
 ---
@@ -18,7 +18,7 @@ Nó là **playbook thực thi**: bắt đầu từ đâu, đi theo thứ tự n�
 
 Bạn dùng file này theo đúng nhịp sau:
 
-1. Đọc [CONTEXT.v2.md](/D:/Game/BinhRebuild/Assets/Editor/CONTEXT.v2.md) để hiểu baseline kiến trúc.
+1. Đọc [CONTEXT.v2.md](/D:/Game/TungRebuild/Assets/Editor/CONTEXT.v2.md) để hiểu baseline kiến trúc.
 2. Dùng file này để biết **thứ tự làm việc**.
 3. Chỉ nhìn repo baseline **sau khi** bạn đã tự code xong một slice.
 4. Nếu bị kẹt:
@@ -66,7 +66,7 @@ Việc phải làm:
 1. Giữ repo hiện tại làm `baseline`.
 2. Không tiếp tục mở feature mới trên baseline branch.
 3. Chỉ sửa baseline nếu phát hiện bug thật hoặc tài liệu sai.
-4. Dùng [CONTEXT.v2.md](/D:/Game/BinhRebuild/Assets/Editor/CONTEXT.v2.md) làm kiến trúc chuẩn hiện tại.
+4. Dùng [CONTEXT.v2.md](/D:/Game/TungRebuild/Assets/Editor/CONTEXT.v2.md) làm kiến trúc chuẩn hiện tại.
 
 ### 4.2. Tạo chỗ rebuild riêng
 
@@ -167,7 +167,7 @@ Dựng khung đủ để bắt đầu `Player Move`, nhưng không dựng thừa
 - `04_Composition.asmdef`
 - `05_Scenes.asmdef`
 
-3. Chốt dependency graph đúng ngay từ đầu theo [CONTEXT.v2.md](/D:/Game/BinhRebuild/Assets/Editor/CONTEXT.v2.md).
+3. Chốt dependency graph đúng ngay từ đầu theo [CONTEXT.v2.md](/D:/Game/TungRebuild/Assets/Editor/CONTEXT.v2.md).
 4. Tạo `ProjectLifetimeScope.cs` rỗng hoặc gần rỗng.
 5. Tạo `BootstrapSceneLifetimeScope.cs`.
 6. Tạo `SceneBootstrapper.cs`.
@@ -224,7 +224,7 @@ Làm xong vertical slice nhỏ nhất nhưng chạm đủ kiến trúc:
 
 #### Core
 
-1. `Assets/_Game/Scripts/01_Core/ValueObjects/BillEntityId.cs`
+1. `Assets/_Game/Scripts/01_Core/ValueObjects/TungRebuild.cs`
 
 #### SharedPorts/Input
 
@@ -235,6 +235,9 @@ Làm xong vertical slice nhỏ nhất nhưng chạm đủ kiến trúc:
 5. `IInteractCommand.cs`
 6. `IInputCommandSource.cs`
 7. `InputContext.cs`
+
+Ghi chú:
+- `IInputContextService.cs` chưa cần ở Slice 1. File này được thêm ở slice death/restart.
 
 #### Modules/Input
 
@@ -266,7 +269,7 @@ Làm xong vertical slice nhỏ nhất nhưng chạm đủ kiến trúc:
 
 ### 7.3. Việc phải làm theo thứ tự
 
-1. Tạo `BillEntityId`.
+1. Tạo `TungRebuild`.
 2. Tạo input contracts ở `SharedPorts`.
 3. Tạo command implementations ở `Modules/Input`.
 4. Tạo `CommandBuffer`.
@@ -469,7 +472,7 @@ Dựng combat path đầu tiên:
 ### 9.4. Cái phải cẩn thận
 
 1. `EnemyBinder` là scene boundary, không phải chỗ nhét logic gameplay lớn.
-2. Runtime path bình thường phải dùng `EnemyRuntimeFactory`, không cho binder tự assemble lung Binh.
+2. Runtime path bình thường phải dùng `EnemyRuntimeFactory`, không cho binder tự assemble lung tung.
 3. `EnemyAttackSensor` không được dùng `GetComponentInParent<IDamageReceiver>()` bừa bãi nếu làm target acquisition. Chỉ bắt đúng collider/body hợp lệ.
 
 ### 9.5. Thao tác Unity
@@ -562,7 +565,7 @@ Hoàn thiện nhánh ngược lại của combat:
 2. Player chết đúng một lần.
 3. Death HUD hiện đúng.
 4. Button restart chạy đúng.
-5. `UI Submit` restart đúng ngay cả sau khi bấm phím lung Binh.
+5. `UI Submit` restart đúng ngay cả sau khi bấm phím lung tung.
 6. Stop Play không exception.
 
 ### 10.7. Commit checkpoint
@@ -801,7 +804,7 @@ Kiểm tra:
 
 Việc phải làm:
 
-1. So lại code với [CONTEXT.v2.md](/D:/Game/BinhRebuild/Assets/Editor/CONTEXT.v2.md).
+1. So lại code với [CONTEXT.v2.md](/D:/Game/TungRebuild/Assets/Editor/CONTEXT.v2.md).
 2. Chỉ cập nhật `CONTEXT` khi baseline thực sự đổi.
 3. Nếu có gì chưa build, ghi rõ `deferred / not built yet`, không được viết như thể đã có.
 
@@ -811,7 +814,7 @@ Việc phải làm:
 
 ### 14.1. Với mỗi slice, quy trình học nên là
 
-1. Đọc phần liên quan trong [CONTEXT.v2.md](/D:/Game/BinhRebuild/Assets/Editor/CONTEXT.v2.md).
+1. Đọc phần liên quan trong [CONTEXT.v2.md](/D:/Game/TungRebuild/Assets/Editor/CONTEXT.v2.md).
 2. Đọc đúng section tương ứng trong file này.
 3. Viết ra note riêng:
 - mục tiêu slice
