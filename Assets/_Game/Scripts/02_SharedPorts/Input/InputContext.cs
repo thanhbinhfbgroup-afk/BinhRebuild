@@ -2,8 +2,8 @@ namespace Binh.SharedPorts.Input
 {
     public enum InputContext
     {
-        Player = 0,
-        UI = 1,
-        Vehicle = 2
+        Player = 1,
+        UI = 2,
+        Vehicle = 3
     }
 }
