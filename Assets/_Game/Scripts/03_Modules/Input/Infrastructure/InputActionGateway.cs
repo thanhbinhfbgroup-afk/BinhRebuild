@@ -4,16 +4,21 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace BillGameCore.Modules.Input.Infrastructure
+namespace Binh.Modules.Input.Infrastructure
 {
     public sealed class InputActionGateway : IDisposable
     {
         private readonly InputActionAsset _runtimeActions;
+
         private readonly InputActionMap _playerActionMap;
         private readonly InputAction _moveAction;
-        private readonly InputAction _interactAction;
         private readonly InputAction _attackAction;
-        public InputContext CurrentContext { get; private set; }
+        private readonly InputAction _interactAction;
+
+        private readonly InputActionMap _uiActionMap;
+        private readonly InputAction _submitAction;
+
+        public InputContext? CurrentContext { get; private set; }
 
         public InputActionGateway(InputActionAsset actions)
         {
@@ -23,83 +28,103 @@ namespace BillGameCore.Modules.Input.Infrastructure
             }
 
             _runtimeActions = UnityEngine.Object.Instantiate(actions);
+
             _playerActionMap = _runtimeActions.FindActionMap(InputContextNames.Player, throwIfNotFound: true);
-            _moveAction = _playerActionMap.FindAction("Move", throwIfNotFound: true);
-            _interactAction = _playerActionMap.FindAction("Interact", throwIfNotFound: true);
+            _moveAction = _playerActionMap.FindAction(InputContextNames.Move, throwIfNotFound: true);
             _attackAction = _playerActionMap.FindAction("Attack", throwIfNotFound: true);
+            _interactAction = _playerActionMap.FindAction("Interact", throwIfNotFound: true);
+
+            _uiActionMap = _runtimeActions.FindActionMap(InputContextNames.UI, throwIfNotFound: true);
+            _submitAction = _uiActionMap.FindAction("Submit", throwIfNotFound: true);
         }
 
-        public void SwitchContext(InputContext context)
+        public void SetContext(InputContext context)
         {
-
-            // CHẶN: Nếu trùng khớp với ngữ cảnh hiện tại -> Thoát luôn cho nhẹ máy
-            if (context == CurrentContext)
-            {
-                return;
-            }
-
-            _playerActionMap.Disable();
-
-
             switch (context)
             {
-
                 case InputContext.Player:
-                    _playerActionMap.Enable();
                     CurrentContext = InputContext.Player;
                     return;
-
-
                 case InputContext.UI:
+                    CurrentContext = InputContext.UI;
+                    return;
                 case InputContext.Vehicle:
-                    throw new InvalidOperationException($"Input context '{context}' is not supported yet.");
-
-
                 default:
-                    throw new InvalidOperationException($"Unknown input context '{context}'.");
+                    throw new InvalidOperationException(
+                        $"InputActionGateway does not support context '{context}'.");
             }
         }
 
-        public void EnablePlayerMap()
+        public void EnableCurrentContext()
         {
-            SwitchContext(InputContext.Player);
+            GetCurrentActionMap().Enable();
         }
 
-        public void DisablePlayerMap()
+        public void DisableCurrentContext()
         {
-            _playerActionMap.Disable();
+            GetCurrentActionMap().Disable();
         }
 
-        public Vector2 ReadMoveInput()
+        private InputActionMap GetCurrentActionMap()
         {
-            if (CurrentContext != InputContext.Player)
+            if (CurrentContext == null)
             {
-                throw new InvalidOperationException(
-                    $"Cannot read move input when current context is '{CurrentContext}'.");
+                throw new InvalidOperationException("InputActionGateway requires an active input context.");
             }
 
+            return CurrentContext switch
+            {
+                InputContext.Player => _playerActionMap,
+                InputContext.UI => _uiActionMap,
+                InputContext.Vehicle => throw new InvalidOperationException(
+                    $"InputActionGateway does not support context '{CurrentContext}'."),
+                _ => throw new InvalidOperationException(
+                    $"InputActionGateway does not support context '{CurrentContext}'.")
+            };
+        }
+
+        public Vector2 ReadMove()
+        {
+            EnsurePlayerContext();
             return _moveAction.ReadValue<Vector2>();
         }
-        public bool WasInteractPerformedThisFrame()
+
+        public bool WasInteractPressedThisFrame()
+        {
+            EnsurePlayerContext();
+            return _interactAction.WasPressedThisFrame();
+        }
+
+        public bool WasAttackPressedThisFrame()
+        {
+            EnsurePlayerContext();
+            return _attackAction.WasPressedThisFrame();
+        }
+
+        private void EnsurePlayerContext()
         {
             if (CurrentContext != InputContext.Player)
             {
                 throw new InvalidOperationException(
-                    $"Cannot read interact input when current context is '{CurrentContext}'.");
+                    $"InputActionGateway requires Player context to read move, but current context is '{CurrentContext}'.");
             }
-
-            return _interactAction.WasPerformedThisFrame();
         }
-        public bool WasAttackPerformedThisFrame()
+
+        public bool WasSubmitPressedThisFrame()
         {
-            if (CurrentContext != InputContext.Player)
+            EnsureUiContext();
+            return _submitAction.WasPressedThisFrame();
+        }
+
+        private void EnsureUiContext()
+        {
+            if (CurrentContext != InputContext.UI)
             {
                 throw new InvalidOperationException(
-                    $"Cannot read attack input when current context is '{CurrentContext}'.");
+                    $"InputActionGateway requires UI context to read submit, but current context is '{CurrentContext}'.");
             }
-
-            return _attackAction.WasPerformedThisFrame();
         }
+
         public void Dispose()
         {
             if (_runtimeActions != null)
