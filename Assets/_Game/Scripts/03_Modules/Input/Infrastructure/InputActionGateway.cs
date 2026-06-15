@@ -29,13 +29,13 @@ namespace Binh.Modules.Input.Infrastructure
 
             _runtimeActions = UnityEngine.Object.Instantiate(actions);
 
-            _playerActionMap = _runtimeActions.FindActionMap(InputContextNames.Player, throwIfNotFound: true);
-            _moveAction = _playerActionMap.FindAction(InputContextNames.Move, throwIfNotFound: true);
-            _attackAction = _playerActionMap.FindAction("Attack", throwIfNotFound: true);
-            _interactAction = _playerActionMap.FindAction("Interact", throwIfNotFound: true);
+            _playerActionMap = _runtimeActions.FindActionMap(InputContextNames.Maps.Player, throwIfNotFound: true);
+            _moveAction = _playerActionMap.FindAction(InputContextNames.PlayerActions.Move, throwIfNotFound: true);
+            _attackAction = _playerActionMap.FindAction(InputContextNames.PlayerActions.Attack, throwIfNotFound: true);
+            _interactAction = _playerActionMap.FindAction(InputContextNames.PlayerActions.Interact, throwIfNotFound: true);
 
-            _uiActionMap = _runtimeActions.FindActionMap(InputContextNames.UI, throwIfNotFound: true);
-            _submitAction = _uiActionMap.FindAction("Submit", throwIfNotFound: true);
+            _uiActionMap = _runtimeActions.FindActionMap(InputContextNames.Maps.UI, throwIfNotFound: true);
+            _submitAction = _uiActionMap.FindAction(InputContextNames.UIActions.Submit, throwIfNotFound: true);
         }
 
         public void SetContext(InputContext context)

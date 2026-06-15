@@ -14,6 +14,10 @@ namespace Binh.Modudes.Input.Context
             public const string Attack = "Attack";
             public const string Interact = "Interact";
         }
+        public static class UIActions
+        {
+            public const string Submit = "Submit";
+        }
     }
     
 }
