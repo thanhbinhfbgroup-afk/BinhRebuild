@@ -42,16 +42,10 @@ namespace Binh.Modules.Input.Infrastructure
         {
             switch (context)
             {
-                case InputContext.Player:
-                    CurrentContext = InputContext.Player;
-                    return;
-                case InputContext.UI:
-                    CurrentContext = InputContext.UI;
-                    return;
+                case InputContext.Player: CurrentContext = InputContext.Player; return;
+                case InputContext.UI: CurrentContext = InputContext.UI; return;
                 case InputContext.Vehicle:
-                default:
-                    throw new InvalidOperationException(
-                        $"InputActionGateway does not support context '{context}'.");
+                default: throw new InvalidOperationException( $"InputActionGateway does not support context '{context}'.");
             }
         }
 
