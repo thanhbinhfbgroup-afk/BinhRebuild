@@ -106,7 +106,7 @@ namespace Binh.Modules.Input.Infrastructure
             if (CurrentContext != InputContext.Player)
             {
                 throw new InvalidOperationException(
-                    $"InputActionGateway requires Player context to read move, but current context is '{CurrentContext}'.");
+                    $"InputActionGateway does not player context, current context is '{CurrentContext}'.");
             }
         }
 
@@ -121,7 +121,7 @@ namespace Binh.Modules.Input.Infrastructure
             if (CurrentContext != InputContext.UI)
             {
                 throw new InvalidOperationException(
-                    $"InputActionGateway requires UI context to read submit, but current context is '{CurrentContext}'.");
+                    $"InputActionGateway does not ui context,current context is '{CurrentContext}'.");
             }
         }
 

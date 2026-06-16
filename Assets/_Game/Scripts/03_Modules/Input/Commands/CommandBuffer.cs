@@ -20,6 +20,10 @@ namespace Binh.Modules.Input.Commands
             command = _commands.Dequeue();
             return true;
         }
+        public void Clear()
+        {
+            _commands.Clear();
+        }
 
     }
 }
