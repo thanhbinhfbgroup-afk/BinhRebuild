@@ -106,11 +106,11 @@ namespace Binh.Modules.Input.Infrastructure
 
         public bool WasSubmitPressedThisFrame()
         {
-            EnsureUiContext();
+            EnsureUIContext();
             return _submitAction.WasPressedThisFrame();
         }
 
-        private void EnsureUiContext()
+        private void EnsureUIContext()
         {
             if (CurrentContext != InputContext.UI)
             {
