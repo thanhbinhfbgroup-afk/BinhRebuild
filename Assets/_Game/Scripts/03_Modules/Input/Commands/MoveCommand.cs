@@ -3,10 +3,10 @@ using Binh.Core.ValueObjects;
 
 namespace Binh.Modules.Input.Commands
 {
-    public sealed class MoveCommand 
+    public sealed class MoveCommand : IMoveCommand
     {
         public CommandType Type => CommandType.Move;
-        public MoveCommand (BinhEntityId controlledEntityId, float dirX, float dirY)
+        public MoveCommand(BinhEntityId controlledEntityId, float dirX, float dirY)
         {
             ControlledEntityId = controlledEntityId;
             DirX = dirX;

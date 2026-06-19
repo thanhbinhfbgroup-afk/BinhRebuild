@@ -3,7 +3,7 @@ using Binh.Core.ValueObjects;
 
 namespace Binh.Modules.Input.Commands
 {
-    public sealed class SwitchContextCommand
+    public sealed class SwitchContextCommand : ICommand
     {
         public CommandType Type => CommandType.SwitchContext;
         public SwitchContextCommand(BinhEntityId controlledEntityId, InputContext targetContext)

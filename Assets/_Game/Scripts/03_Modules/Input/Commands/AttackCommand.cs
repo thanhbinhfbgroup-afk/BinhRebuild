@@ -3,7 +3,7 @@ using Binh.Core.ValueObjects;
 
 namespace Binh.Modules.Input.Commands
 {
-    public sealed class AttackCommand
+    public sealed class AttackCommand : IAttackCommand
     {
         public CommandType Type => CommandType.Attack;
         public AttackCommand(BinhEntityId controlledEntityId, bool isHeld, float heldDuration)

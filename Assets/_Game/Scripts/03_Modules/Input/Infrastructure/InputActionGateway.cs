@@ -1,4 +1,4 @@
-using Binh.Modudes.Input.Context;
+using Binh.Modules.Input.Context;
 using Binh.SharedPorts.Input;
 using System;
 using UnityEngine;
@@ -17,6 +17,7 @@ namespace Binh.Modules.Input.Infrastructure
 
         private readonly InputActionMap _uiActionMap;
         private readonly InputAction _submitAction;
+        private bool _disposed;
 
         public InputContext? CurrentContext { get; private set; }
 
@@ -45,7 +46,7 @@ namespace Binh.Modules.Input.Infrastructure
                 case InputContext.Player: CurrentContext = InputContext.Player; return;
                 case InputContext.UI: CurrentContext = InputContext.UI; return;
                 case InputContext.Vehicle:
-                default: throw new InvalidOperationException( $"InputActionGateway does not support context '{context}'.");
+                default: throw new InvalidOperationException($"InputActionGateway does not support context '{context}'.");
             }
         }
 
@@ -94,6 +95,11 @@ namespace Binh.Modules.Input.Infrastructure
             EnsurePlayerContext();
             return _attackAction.WasPressedThisFrame();
         }
+        public bool IsAttackHeld()
+        {
+            EnsurePlayerContext();
+            return _attackAction.IsPressed();
+        }
 
         private void EnsurePlayerContext()
         {
@@ -121,10 +127,30 @@ namespace Binh.Modules.Input.Infrastructure
 
         public void Dispose()
         {
+            if (_disposed)
+            {
+                return;
+            }
+
+            DisableCurrentContextSafely();
+
             if (_runtimeActions != null)
             {
                 UnityEngine.Object.Destroy(_runtimeActions);
             }
+
+            CurrentContext = null;
+            _disposed = true;
+        }
+
+        private void DisableCurrentContextSafely()
+        {
+            if (CurrentContext == null)
+            {
+                return;
+            }
+
+            GetCurrentActionMap().Disable();
         }
     }
 }

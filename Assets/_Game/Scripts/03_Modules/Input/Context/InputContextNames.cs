@@ -1,4 +1,4 @@
-namespace Binh.Modudes.Input.Context
+namespace Binh.Modules.Input.Context
 {
     public static class InputContextNames
     {
@@ -19,5 +19,5 @@ namespace Binh.Modudes.Input.Context
             public const string Submit = "Submit";
         }
     }
-    
+
 }
