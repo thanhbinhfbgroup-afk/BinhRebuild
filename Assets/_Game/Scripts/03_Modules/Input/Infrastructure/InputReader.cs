@@ -22,12 +22,9 @@ namespace Binh.Modules.Input.Infrastructure
                 throw new InvalidOperationException("InputReader requires an active entityid");
             }
             _controlledEntityId = entityId;
+            Debug.Log($"[InputReader] {gameObject.name} had set controlled entity to {entityId}", this);
         }
-        private void Awake()
-        {
-            _inputActionGateway = EnsureGateway();
-            _inputActionGateway.SetContext(InputContext.Player);
-        }
+
         private InputActionGateway EnsureGateway()
         {
             if (_actions == null)
@@ -37,17 +34,43 @@ namespace Binh.Modules.Input.Infrastructure
             _inputActionGateway ??= new InputActionGateway(_actions);
             return _inputActionGateway;
         }
+
+        private void Awake()
+        {
+            if (_actions == null)
+            {
+                Debug.LogError(
+                    $"[InputReader] Missing InputActionAsset on '{gameObject.name}'. Assign an asset in the Inspector.",
+                    this);
+                enabled = false;
+                return;
+            }
+            if (_commandBuffer == null)
+            {
+                Debug.LogError(
+                    $"[InputReader] CommandBuffer dependency not injected on '{gameObject.name}'. Ensure it is registered in the DI container.",
+                    this);
+                enabled = false;
+                return;
+            }
+
+            _inputActionGateway = EnsureGateway();
+            _inputActionGateway.SetContext(InputContext.Player);
+            Debug.Log($"[InputReader] {gameObject.name} had set up done and WAITING to pass entityId", this);
+        }
         private void OnEnable()
         {
-            _inputActionGateway.EnableCurrentContext();
+            if (_inputActionGateway != null)
+            {
+                _inputActionGateway.EnableCurrentContext();
+            }
         }
         private void OnDisable()
         {
-            if (_inputActionGateway == null)
+            if (_inputActionGateway != null)
             {
-                return;
+                _inputActionGateway.DisableCurrentContext();
             }
-            _inputActionGateway.DisableCurrentContext();
         }
         public void ValidateConfiguration()
         {
@@ -60,6 +83,7 @@ namespace Binh.Modules.Input.Infrastructure
         }
         private void Update()
         {
+
             switch (_inputActionGateway.CurrentContext)
             {
                 case InputContext.Player: ReadPlayerMap(); return;
@@ -71,18 +95,14 @@ namespace Binh.Modules.Input.Infrastructure
         }
         private void ReadPlayerMap()
         {
-            if (_commandBuffer == null)
-            {
-                throw new InvalidOperationException("InputReader requires a command buffer");
-            }
             if (!_controlledEntityId.IsValid)
             {
-                throw new InvalidOperationException("InputReader requires an active entity id");
+                return;
             }
             var moveInput = _inputActionGateway.ReadMove();
-            var DirX = moveInput.x;
-            var DirY = moveInput.y;
-            _commandBuffer.Enqueue(new MoveCommand(_controlledEntityId, DirX, DirY));
+            var dirX = moveInput.x;
+            var dirY = moveInput.y;
+            _commandBuffer.Enqueue(new MoveCommand(_controlledEntityId, dirX, dirY));
             if (_inputActionGateway.WasAttackPressedThisFrame())
             {
                 _commandBuffer.Enqueue(new AttackCommand(_controlledEntityId, _inputActionGateway.IsAttackHeld(), 0f));
@@ -99,14 +119,14 @@ namespace Binh.Modules.Input.Infrastructure
                 throw new InvalidOperationException("InputReader requires a command buffer");
             }
             var gateway = EnsureGateway();
-            if (gateway.CurrentContext == targetContext)
+            if (gateway.CurrentContext != targetContext)
             {
-                return;
+                gateway.DisableCurrentContext();
+                gateway.SetContext(targetContext);
+                gateway.EnableCurrentContext();
+                _commandBuffer.Clear();
             }
-            gateway.DisableCurrentContext();
-            gateway.SetContext(targetContext);
-            gateway.EnableCurrentContext();
-            _commandBuffer.Clear();
+
         }
         public bool WasSubmitPressedThisFrame()
         {
@@ -119,13 +139,11 @@ namespace Binh.Modules.Input.Infrastructure
         }
         private void OnDestroy()
         {
-            if (_inputActionGateway == null)
+            if (_inputActionGateway != null)
             {
-                return;
+                _inputActionGateway.Dispose();
+                _inputActionGateway = null;
             }
-
-            _inputActionGateway.Dispose();
-            _inputActionGateway = null;
         }
     }
 }
