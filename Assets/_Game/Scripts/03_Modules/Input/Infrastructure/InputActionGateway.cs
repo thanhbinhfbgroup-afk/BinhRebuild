@@ -145,12 +145,10 @@ namespace Binh.Modules.Input.Infrastructure
 
         private void DisableCurrentContextSafely()
         {
-            if (CurrentContext == null)
+            if (CurrentContext != null)
             {
-                return;
-            }
-
-            GetCurrentActionMap().Disable();
+                GetCurrentActionMap().Disable();return;
+            }          
         }
     }
 }
