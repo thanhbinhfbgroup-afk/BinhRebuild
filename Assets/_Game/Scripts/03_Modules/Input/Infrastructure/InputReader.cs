@@ -24,7 +24,25 @@ namespace Binh.Modules.Input.Infrastructure
             _controlledEntityId = entityId;
             Debug.Log($"[InputReader] {gameObject.name} had set controlled entity to {entityId}", this);
         }
+        private void Awake()
+        {
+            if (_actions == null)
+            {
+                Debug.LogError($"[InputReader] Missing InputActionAsset on {gameObject.name}", this);
+                enabled = false;
+                return;
+            }
+            if (_commandBuffer == null)
+            {
+                Debug.LogError($"[InputReader] CommandBuffer dependency not injected on {gameObject.name}", this);
+                enabled = false;
+                return;
+            }
 
+            _inputActionGateway = EnsureGateway();
+            _inputActionGateway.SetContext(InputContext.Player);
+            Debug.LogWarning($"[InputReader] {gameObject.name} had set up done and WAITING to pass entityId", this);
+        }
         private InputActionGateway EnsureGateway()
         {
             if (_actions == null)
@@ -35,29 +53,6 @@ namespace Binh.Modules.Input.Infrastructure
             return _inputActionGateway;
         }
 
-        private void Awake()
-        {
-            if (_actions == null)
-            {
-                Debug.LogError(
-                    $"[InputReader] Missing InputActionAsset on '{gameObject.name}'. Assign an asset in the Inspector.",
-                    this);
-                enabled = false;
-                return;
-            }
-            if (_commandBuffer == null)
-            {
-                Debug.LogError(
-                    $"[InputReader] CommandBuffer dependency not injected on '{gameObject.name}'. Ensure it is registered in the DI container.",
-                    this);
-                enabled = false;
-                return;
-            }
-
-            _inputActionGateway = EnsureGateway();
-            _inputActionGateway.SetContext(InputContext.Player);
-            Debug.Log($"[InputReader] {gameObject.name} had set up done and WAITING to pass entityId", this);
-        }
         private void OnEnable()
         {
             if (_inputActionGateway != null)
@@ -88,9 +83,9 @@ namespace Binh.Modules.Input.Infrastructure
             {
                 case InputContext.Player: ReadPlayerMap(); return;
                 case InputContext.UI: return;
-                case InputContext.Vehicle: throw new InvalidOperationException("InputReader does not support Vehicle context");
-                case null: throw new InvalidOperationException("InputReader requires input context ");
-                default: throw new InvalidOperationException("InputReader does support");
+                case InputContext.Vehicle: throw new InvalidOperationException("InputReader does not support Vehicle context yet");
+                case null: throw new InvalidOperationException("Input reader requires an active InputContext");
+                default: throw new InvalidOperationException($"InputReader does not support {_inputActionGateway.CurrentContext}");
             }
         }
         private void ReadPlayerMap()

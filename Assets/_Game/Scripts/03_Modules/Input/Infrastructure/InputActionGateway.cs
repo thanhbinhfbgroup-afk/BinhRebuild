@@ -9,16 +9,13 @@ namespace Binh.Modules.Input.Infrastructure
     public sealed class InputActionGateway : IDisposable
     {
         private readonly InputActionAsset _runtimeActions;
-
         private readonly InputActionMap _playerActionMap;
         private readonly InputAction _moveAction;
         private readonly InputAction _attackAction;
         private readonly InputAction _interactAction;
-
         private readonly InputActionMap _uiActionMap;
         private readonly InputAction _submitAction;
         private bool _disposed;
-
         public InputContext? CurrentContext { get; private set; }
 
         public InputActionGateway(InputActionAsset actions)
@@ -27,18 +24,18 @@ namespace Binh.Modules.Input.Infrastructure
             {
                 throw new InvalidOperationException("InputActionGateway requires an InputActionAsset.");
             }
-
+#if !UNITY_EDITOR
             _runtimeActions = UnityEngine.Object.Instantiate(actions);
-
+#else
+            _runtimeActions = actions;
+#endif
             _playerActionMap = _runtimeActions.FindActionMap(InputContextNames.Maps.Player, throwIfNotFound: true);
             _moveAction = _playerActionMap.FindAction(InputContextNames.PlayerActions.Move, throwIfNotFound: true);
             _attackAction = _playerActionMap.FindAction(InputContextNames.PlayerActions.Attack, throwIfNotFound: true);
             _interactAction = _playerActionMap.FindAction(InputContextNames.PlayerActions.Interact, throwIfNotFound: true);
-
             _uiActionMap = _runtimeActions.FindActionMap(InputContextNames.Maps.UI, throwIfNotFound: true);
             _submitAction = _uiActionMap.FindAction(InputContextNames.UIActions.Submit, throwIfNotFound: true);
         }
-
         public void SetContext(InputContext context)
         {
             switch (context)
@@ -49,17 +46,14 @@ namespace Binh.Modules.Input.Infrastructure
                 default: throw new InvalidOperationException($"InputActionGateway does not support context '{context}'.");
             }
         }
-
         public void EnableCurrentContext()
         {
             GetCurrentActionMap().Enable();
         }
-
         public void DisableCurrentContext()
         {
             GetCurrentActionMap().Disable();
         }
-
         private InputActionMap GetCurrentActionMap()
         {
             if (CurrentContext == null)
@@ -77,7 +71,6 @@ namespace Binh.Modules.Input.Infrastructure
                     $"InputActionGateway does not support context '{CurrentContext}'.")
             };
         }
-
         public Vector2 ReadMove()
         {
             EnsurePlayerContext();
@@ -89,7 +82,6 @@ namespace Binh.Modules.Input.Infrastructure
             EnsurePlayerContext();
             return _interactAction.WasPressedThisFrame();
         }
-
         public bool WasAttackPressedThisFrame()
         {
             EnsurePlayerContext();
@@ -100,7 +92,6 @@ namespace Binh.Modules.Input.Infrastructure
             EnsurePlayerContext();
             return _attackAction.IsPressed();
         }
-
         private void EnsurePlayerContext()
         {
             if (CurrentContext != InputContext.Player)
@@ -109,13 +100,11 @@ namespace Binh.Modules.Input.Infrastructure
                     $"InputActionGateway does not player context, current context is '{CurrentContext}'.");
             }
         }
-
         public bool WasSubmitPressedThisFrame()
         {
             EnsureUIContext();
             return _submitAction.WasPressedThisFrame();
         }
-
         private void EnsureUIContext()
         {
             if (CurrentContext != InputContext.UI)
@@ -124,7 +113,6 @@ namespace Binh.Modules.Input.Infrastructure
                     $"InputActionGateway does not ui context,current context is '{CurrentContext}'.");
             }
         }
-
         public void Dispose()
         {
             if (_disposed)
@@ -133,24 +121,22 @@ namespace Binh.Modules.Input.Infrastructure
             }
 
             DisableCurrentContextSafely();
-
+#if !UNITY_EDITOR
             if (_runtimeActions != null)
             {
                 UnityEngine.Object.Destroy(_runtimeActions);
             }
+#endif
 
             CurrentContext = null;
             _disposed = true;
         }
-
         private void DisableCurrentContextSafely()
         {
-            if (CurrentContext == null)
+            if (CurrentContext != null)
             {
-                return;
+                GetCurrentActionMap().Disable();
             }
-
-            GetCurrentActionMap().Disable();
         }
     }
 }
