@@ -68,6 +68,7 @@
         "ModuleInput.csproj": true,
         "PsdPlugin.csproj": true,
         "ScriptablePacker.csproj": true,
+        "Temp": true,
         "Unity.2D.Animation.Editor.csproj": true,
         "Unity.2D.Animation.Runtime.csproj": true,
         "Unity.2D.Aseprite.Common.csproj": true,
