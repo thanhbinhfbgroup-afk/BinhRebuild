@@ -2,6 +2,7 @@
   <Project Path="02_SharePorts.csproj" />
   <Project Path="ModuleInput.csproj" />
   <Project Path="05_Scene.csproj" />
+  <Project Path="ModulePlayer.csproj" />
   <Project Path="04_Composition.csproj" />
   <Project Path="01_Core.csproj" />
 </Solution>

@@ -66,6 +66,7 @@
         "Library": true,
         "Logs": true,
         "ModuleInput.csproj": true,
+        "ModulePlayer.csproj": true,
         "PsdPlugin.csproj": true,
         "ScriptablePacker.csproj": true,
         "Temp": true,
