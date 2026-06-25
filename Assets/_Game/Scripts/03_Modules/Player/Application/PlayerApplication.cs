@@ -1,6 +1,6 @@
 using System;
 using Binh.Core.Combat;
-using Binh.Core.Reward;
+using Binh.Core.Rewards;
 using Binh.Core.ValueObjects;
 using Binh.Modules.Player.Domain;
 using UnityEditorInternal;

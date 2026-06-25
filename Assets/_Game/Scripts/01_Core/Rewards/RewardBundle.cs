@@ -1,4 +1,4 @@
-namespace Binh.Core.Reward
+namespace Binh.Core.Rewards
 {
     public readonly struct RewardBundle
     {
