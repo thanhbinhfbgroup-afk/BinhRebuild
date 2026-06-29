@@ -10,7 +10,7 @@ namespace Binh.Modules.Player.Infrastructure.Config
         [field: SerializeField, Min(0.01f)]
         public float MaxHealth { get; private set; } = 10f;
 
-        [field: SerializeField, Min(0f)]
+        [field: SerializeField, Min(0.01f)]
         public float MoveSpeed { get; private set; } = 5f;
 
         [field: SerializeField, Min(0f)]
