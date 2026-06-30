@@ -8,16 +8,19 @@ namespace Binh.Modules.Player.Domain
         public float MaxHealth { get; private set; }
         public float MoveVelocityX { get; private set; }
         public float MoveVelocityY { get; private set; }
+        public float NextAttackTime { get; private set; }
         public bool IsDead => CurrentHealth <= 0f;
         public bool IsMoving => !IsDead && (MoveVelocityX * MoveVelocityX + MoveVelocityY * MoveVelocityY) > 0f;
-        public PlayerState(float initialMaxHealth)
+        public PlayerState(PlayerDefinition definition)
         {
-            if (initialMaxHealth <= 0f)
+            if (definition == null)
             {
-                throw new ArgumentOutOfRangeException(nameof(initialMaxHealth), "PlayerState requires initialMaxHealth > 0f.");
+                throw new ArgumentNullException(nameof(definition));
             }
-            MaxHealth = initialMaxHealth;
-            CurrentHealth = initialMaxHealth;
+
+            MaxHealth = definition.MaxHealth;
+            CurrentHealth = definition.MaxHealth;
+            NextAttackTime = 0f;
         }
         public void SetMoveVelocity(float velocityX, float velocityY)
         {
@@ -40,17 +43,13 @@ namespace Binh.Modules.Player.Domain
                 MoveVelocityY = 0f;
             }
         }
-        public void Revive(float healthAfterRevive)
+        public void SetNextAttackTime(float nextAttackTime)
         {
-            if (!IsDead)
+            if (nextAttackTime < 0f)
             {
-                return;
+                throw new ArgumentOutOfRangeException(nameof(nextAttackTime), "PlayerState requires NextAttackTime >= 0f.");
             }
-            if (healthAfterRevive <= 0f || healthAfterRevive > MaxHealth)
-            {
-                throw new ArgumentOutOfRangeException(nameof(healthAfterRevive));
-            }
-            CurrentHealth = healthAfterRevive;
+            NextAttackTime = nextAttackTime;
         }
     }
 }

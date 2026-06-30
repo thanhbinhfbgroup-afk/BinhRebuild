@@ -3,7 +3,6 @@ using Binh.Core.Combat;
 using Binh.Core.Rewards;
 using Binh.Core.ValueObjects;
 using Binh.Modules.Player.Domain;
-using UnityEditorInternal;
 
 namespace Binh.Modules.Player.Application
 {
@@ -12,7 +11,8 @@ namespace Binh.Modules.Player.Application
         private readonly BinhEntityId _entityId;
         private readonly PlayerState _state;
         private readonly PlayerDefinition _definition;
-        public Action<BinhEntityId, RewardBundle> DiedCallback { get; set; }
+        public bool IsDead => _state.IsDead;
+        public event Action<BinhEntityId, RewardBundle> Died;
         public PlayerApplication(BinhEntityId entityId, PlayerState state, PlayerDefinition definition)
         {
             if (!entityId.IsValid)
@@ -36,6 +36,16 @@ namespace Binh.Modules.Player.Application
             velocityY = inputY * _definition.MoveSpeed;
             _state.SetMoveVelocity(velocityX, velocityY);
         }
+        public PlayerReadModel GetReadModel()
+        {
+            return new PlayerReadModel(
+                _state.CurrentHealth,
+                _state.MaxHealth,
+                _state.MoveVelocityX,
+                _state.MoveVelocityY,
+                _state.IsDead,
+                _state.IsMoving);
+        }
         public DamageResult ReceiveDamage(DamageInfo damageInfo)
         {
             var requestDamage = damageInfo.Amount;
@@ -57,7 +67,7 @@ namespace Binh.Modules.Player.Application
             var justDied = wasAlive && !_state.IsDead;
             if (justDied)
             {
-                DiedCallback?.Invoke(_entityId, new RewardBundle(0, 0));
+                Died?.Invoke(_entityId, new RewardBundle(0, 0));
             }
             return new DamageResult(appliedDamage, _state.CurrentHealth, justDied);
         }
