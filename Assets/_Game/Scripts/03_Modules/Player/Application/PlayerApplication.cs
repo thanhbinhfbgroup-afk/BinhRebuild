@@ -3,6 +3,8 @@ using Binh.Core.Combat;
 using Binh.Core.Rewards;
 using Binh.Core.ValueObjects;
 using Binh.Modules.Player.Domain;
+using Mono.Cecil;
+using UnityEditorInternal;
 
 namespace Binh.Modules.Player.Application
 {
@@ -46,25 +48,42 @@ namespace Binh.Modules.Player.Application
                 _state.IsDead,
                 _state.IsMoving);
         }
+        public DamageResult Attack(IDamageReceiver target, float currentTime)
+        {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+            if (_state.IsDead || currentTime < _state.NextAttackTime || _definition.AttackDamage <= 0)
+            {
+                return new DamageResult(0f, _state.CurrentHealth, false);
+            }
+            var damageInfo = new DamageInfo(_definition.AttackDamage, _entityId);
+            var result = target.ReceiveDamage(damageInfo);
+            _state.SetNextAttackTime(currentTime + _definition.AttackCooldown);
+            return result;
+        }
         public DamageResult ReceiveDamage(DamageInfo damageInfo)
         {
-            var requestDamage = damageInfo.Amount;
-            if (requestDamage < 0f)
+            if (_state.IsDead)
             {
-                requestDamage = 0f;
+                return new DamageResult(0f, _state.CurrentHealth, false);
             }
-            var wasAlive = !_state.IsDead;
-            var appliedDamage = 0f;
-            if (wasAlive)
+            var requestedDamage = damageInfo.Amount;
+            if (requestedDamage < 0f)
             {
-                if (appliedDamage > _state.CurrentHealth)
-                {
-                    appliedDamage = _state.CurrentHealth;
-                }
-                var nextHealth = _state.CurrentHealth - appliedDamage;
-                _state.SetCurrentHealth(nextHealth);
+                requestedDamage = 0f;
             }
-            var justDied = wasAlive && !_state.IsDead;
+            var appliedDamage = requestedDamage;
+
+            if (appliedDamage > _state.CurrentHealth)
+            {
+                appliedDamage = _state.CurrentHealth;
+            }
+            var nextHealth = _state.CurrentHealth - appliedDamage;
+            _state.SetCurrentHealth(nextHealth);
+
+            var justDied = !_state.IsDead;
             if (justDied)
             {
                 Died?.Invoke(_entityId, new RewardBundle(0, 0));

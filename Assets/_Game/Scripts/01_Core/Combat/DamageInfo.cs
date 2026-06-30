@@ -7,12 +7,11 @@ namespace Binh.Core.Combat
     {
         public float Amount { get; }
         public BinhEntityId SourceId { get; }
-        public bool IsCritical { get; }
-        public DamageInfo(float amount, BinhEntityId sourceId, bool isCritical)
+
+        public DamageInfo(float amount, BinhEntityId sourceId)
         {
             Amount = amount;
             SourceId = sourceId;
-            IsCritical = isCritical;
         }
     }
 }
