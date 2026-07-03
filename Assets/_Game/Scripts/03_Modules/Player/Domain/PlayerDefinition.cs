@@ -1,4 +1,5 @@
 using System;
+using Binh.Core.Combat;
 
 namespace Binh.Modules.Player.Domain
 {
@@ -6,10 +7,9 @@ namespace Binh.Modules.Player.Domain
     {
         public float MaxHealth { get; }
         public float MoveSpeed { get; }
-        public float AttackDamage { get; }
-        public float AttackCooldown { get; }
+        public WeaponDefinition StartWeapon { get; }
 
-        public PlayerDefinition(float maxHealth, float moveSpeed, float attackDamage, float attackCooldown)
+        public PlayerDefinition(float maxHealth, float moveSpeed, WeaponDefinition startWeapon)
         {
             if (maxHealth <= 0f)
             {
@@ -19,20 +19,11 @@ namespace Binh.Modules.Player.Domain
             {
                 throw new ArgumentOutOfRangeException(nameof(moveSpeed), "PlayerDefinition requires MoveSpeed > 0f.");
             }
-            if (attackDamage < 0f)
-            {
-                throw new ArgumentOutOfRangeException(nameof(attackDamage), "PlayerDefinition requires AttackDamage >= 0f.");
-            }
-            if (attackCooldown < 0f)
-            {
-                throw new ArgumentOutOfRangeException(nameof(attackCooldown), "PlayerDefinition requires AttackCooldown >= 0f.");
-            }
+
             MaxHealth = maxHealth;
             MoveSpeed = moveSpeed;
-            AttackDamage = attackDamage;
-            AttackCooldown = attackCooldown;
+            StartWeapon = startWeapon;
+
         }
-
-
     }
 }

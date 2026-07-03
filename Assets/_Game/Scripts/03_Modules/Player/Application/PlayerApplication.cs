@@ -3,8 +3,6 @@ using Binh.Core.Combat;
 using Binh.Core.Rewards;
 using Binh.Core.ValueObjects;
 using Binh.Modules.Player.Domain;
-using Mono.Cecil;
-using UnityEditorInternal;
 
 namespace Binh.Modules.Player.Application
 {
@@ -14,6 +12,7 @@ namespace Binh.Modules.Player.Application
         private readonly PlayerState _state;
         private readonly PlayerDefinition _definition;
         public bool IsDead => _state.IsDead;
+        public WeaponDefinition CurrentWeapon => _state.CurrentWeapon;
         public event Action<BinhEntityId, RewardBundle> Died;
         public PlayerApplication(BinhEntityId entityId, PlayerState state, PlayerDefinition definition)
         {
@@ -27,6 +26,13 @@ namespace Binh.Modules.Player.Application
         }
         public void ComputeMoveVelocity(float inputX, float inputY, out float velocityX, out float velocityY)
         {
+            if (_state.IsDead)
+            {
+                velocityX = 0f;
+                velocityY = 0f;
+                _state.SetMoveVelocity(velocityX, velocityY);
+                return;
+            }
             var magnitudeSquared = (inputX * inputX) + (inputY * inputY);
             if (magnitudeSquared > 1f)
             {
@@ -45,23 +51,32 @@ namespace Binh.Modules.Player.Application
                 _state.MaxHealth,
                 _state.MoveVelocityX,
                 _state.MoveVelocityY,
+                _state.CurrentWeaponDurability,
+                _state.MaxWeaponDurability,
                 _state.IsDead,
                 _state.IsMoving);
         }
-        public DamageResult Attack(IDamageReceiver target, float currentTime)
+        public AttackStartResult TryStartAttack(float currentTime)
         {
-            if (target == null)
+            if (_state.IsDead)
             {
-                throw new ArgumentNullException(nameof(target));
+                return AttackStartResult.CreateBlocked(AttackBlockReason.Dead);
             }
-            if (_state.IsDead || currentTime < _state.NextAttackTime || _definition.AttackDamage <= 0)
+            if (currentTime < _state.NextAttackTime)
             {
-                return new DamageResult(0f, _state.CurrentHealth, false);
+                return AttackStartResult.CreateBlocked(AttackBlockReason.Cooldown);
             }
-            var damageInfo = new DamageInfo(_definition.AttackDamage, _entityId);
-            var result = target.ReceiveDamage(damageInfo);
-            _state.SetNextAttackTime(currentTime + _definition.AttackCooldown);
-            return result;
+            if (_state.CurrentWeaponDurability <= 0)
+            {
+                return AttackStartResult.CreateBlocked(AttackBlockReason.BrokenWeapon);
+            }
+            var attack = _state.CurrentWeapon.Attack;
+            _state.SetNextAttackTime(currentTime + attack.Cooldown);
+            return AttackStartResult.CreateStarted(new AttackRequest(_entityId, attack, currentTime));
+        }
+        public void ConsumeAttackDurability()
+        {
+            _state.ConsumeWeaponDurability(1);
         }
         public DamageResult ReceiveDamage(DamageInfo damageInfo)
         {
