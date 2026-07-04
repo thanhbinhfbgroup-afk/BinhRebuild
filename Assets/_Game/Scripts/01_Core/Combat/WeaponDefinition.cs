@@ -7,17 +7,17 @@ namespace Binh.Core.Combat
         public AttackDefinition Attack { get; }
         public int MaxDurability { get; }
 
-        public WeaponDefinition(AttackDefinition attackWeapon, int maxDurability)
+        public WeaponDefinition(AttackDefinition attack, int maxDurability)
         {
-            if (attackWeapon.Damage <= 0f)
+            if (attack.Damage <= 0f)
             {
-                throw new ArgumentException("WeaponDefinition requires a valid attack definition.", nameof(attackWeapon));
+                throw new ArgumentException("WeaponDefinition requires a valid attack definition.", nameof(attack));
             }
             if (maxDurability <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(maxDurability), "WeaponDefinition requires MaxDurability > 0.");
             }
-            Attack = attackWeapon;
+            Attack = attack;
             MaxDurability = maxDurability;
         }
     }
